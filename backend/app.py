@@ -108,6 +108,7 @@ if __name__ == '__main__':
     print("Server running at: http://localhost:5000")
     print("API endpoints: /forward, /backward, /left, /right, /stop, /status")
     
-    # Run Flask in debug mode for development
-    # debug=True allows auto-reload when code changes
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Run Flask in production mode (NOT debug mode)
+    # debug=False prevents auto-reload which causes port conflicts with GO1 SDK
+    # use_reloader=False prevents Flask from restarting and causing port conflicts
+    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
