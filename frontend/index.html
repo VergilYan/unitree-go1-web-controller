@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GO1 Web Controller</title>
+    <!-- Link to our CSS file for styling -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main container for the entire controller -->
+    <div class="container">
+        <!-- Header section -->
+        <header class="header">
+            <h1>GO1 Web Controller</h1>
+            <p class="subtitle">Unitree GO1 Pro Robot Dog Controller</p>
+        </header>
+
+        <!-- Status panel -->
+        <div class="status-panel">
+            <!-- Connection status -->
+            <div class="status-item">
+                <span class="status-label">Connection:</span>
+                <span id="connection-status" class="status-value disconnected">Disconnected</span>
+            </div>
+            <!-- Current command status -->
+            <div class="status-item">
+                <span class="status-label">Current Command:</span>
+                <span id="current-command" class="status-value">Ready</span>
+            </div>
+        </div>
+
+        <!-- Control panel -->
+        <div class="control-panel">
+            <h2>Controls</h2>
+            
+            <!-- Direction buttons arranged like a D-pad -->
+            <div class="direction-pad">
+                <!-- Forward button (top) -->
+                <button id="btn-forward" class="direction-btn forward" title="W or Click">
+                    <span class="arrow">↑</span>
+                    <span class="btn-label">Forward</span>
+                </button>
+                
+                <!-- Left button (left) -->
+                <button id="btn-left" class="direction-btn left" title="A or Click">
+                    <span class="arrow">←</span>
+                    <span class="btn-label">Left</span>
+                </button>
+                
+                <!-- Stop button (center) -->
+                <button id="btn-stop" class="direction-btn stop" title="Space or Click">
+                    <span class="btn-label">Stop</span>
+                </button>
+                
+                <!-- Right button (right) -->
+                <button id="btn-right" class="direction-btn right" title="D or Click">
+                    <span class="arrow">→</span>
+                    <span class="btn-label">Right</span>
+                </button>
+                
+                <!-- Backward button (bottom) -->
+                <button id="btn-backward" class="direction-btn backward" title="S or Click">
+                    <span class="arrow">↓</span>
+                    <span class="btn-label">Backward</span>
+                </button>
+            </div>
+
+            <!-- Keyboard hints -->
+            <div class="keyboard-hints">
+                <p>Keyboard Controls:</p>
+                <div class="key-hint">W - Forward</div>
+                <div class="key-hint">S - Backward</div>
+                <div class="key-hint">A - Left</div>
+                <div class="key-hint">D - Right</div>
+                <div class="key-hint">Space - Stop</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>GO1 Web Controller - Safe Mode Active</p>
+        </footer>
+    </div>
+
+    <!-- Link to our JavaScript file for interactivity -->
+    <script src="script.js"></script>
+</body>
+</html>

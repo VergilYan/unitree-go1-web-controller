@@ -1,0 +1,11 @@
+# GO1 Web Controller Dependencies
+# Install with: pip install -r requirements.txt
+
+# Flask web framework
+flask==2.3.3
+
+# Flask CORS (for cross-origin requests)
+flask-cors==4.0.0
+
+# Unitree Legged SDK (will be added later)
+# unitree-legged-sdk (from local or pip)

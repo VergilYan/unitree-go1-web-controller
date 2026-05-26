@@ -1,0 +1,95 @@
+# ==============================================================================
+# GO1 Web Controller - .gitignore File
+# ==============================================================================
+# This file tells Git which files/folders to ignore (not track)
+# Useful for: temporary files, build artifacts, secrets, etc.
+# ==============================================================================
+
+# ------------------------------
+# Python Specific Files
+# ------------------------------
+# Compiled Python files (.pyc, .pyo, .pyd)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Python bytecode directories
+.Python/
+
+# ------------------------------
+# Virtual Environments & Conda
+# ------------------------------
+# Virtualenv (Python virtual environments)
+venv/
+env/
+.env/
+.venv/
+
+# Conda environments
+miniconda3/
+anaconda3/
+conda_env/
+.conda/
+
+# ------------------------------
+# Flask & Web Development
+# ------------------------------
+# Flask debug files
+*.pyc
+instance/
+.webassets-cache/
+
+# Log files
+logs/
+*.log
+*.log.*
+
+# ------------------------------
+# Build & Distribution Files
+# ------------------------------
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.installed.cfg
+
+# C/C++ compiled files
+*.o
+*.a
+*.so
+
+# ------------------------------
+# System & Editor Files
+# ------------------------------
+# Linux/Mac system files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Editor directories
+.vscode/
+.idea/
+.project
+.pydevproject
+
+# ------------------------------
+# Unitree SDK Specific
+# ------------------------------
+# Precompiled libraries (keep SDK source but ignore binaries)
+sdk/unitree_legged_sdk/lib/python/*.so
+sdk/unitree_legged_sdk/lib/cpp/*.a
+
+# ------------------------------
+# Secrets & Configuration
+# ------------------------------
+# Environment variables (keep secrets out of Git!)
+.env
+.env.local
+.env.*.local
+
+# Configuration files with sensitive data
+config.py
+settings.py

@@ -1,0 +1,241 @@
+/* 
+GO1 Web Controller Stylesheet
+Modern dark theme for robot control interface
+*/
+
+/* Reset default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    color: #ffffff;
+}
+
+/* Main container */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Header styles */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    color: #00d9ff;
+    text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #888888;
+}
+
+/* Status panel */
+.status-panel {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px 30px;
+    margin-bottom: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-label {
+    font-size: 0.9rem;
+    color: #aaaaaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #00ff88;
+}
+
+.status-value.disconnected {
+    color: #ff4444;
+}
+
+/* Control panel */
+.control-panel {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 30px;
+    width: 100%;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.control-panel h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #00d9ff;
+}
+
+/* Direction pad layout */
+.direction-pad {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 15px;
+    max-width: 300px;
+    margin: 0 auto 30px;
+}
+
+/* Position buttons in grid */
+#btn-forward { grid-column: 2; grid-row: 1; }
+#btn-left { grid-column: 1; grid-row: 2; }
+#btn-stop { grid-column: 2; grid-row: 2; }
+#btn-right { grid-column: 3; grid-row: 2; }
+#btn-backward { grid-column: 2; grid-row: 3; }
+
+/* Direction button styles */
+.direction-btn {
+    background: linear-gradient(145deg, #2a2a4a, #1a1a3a);
+    border: 2px solid rgba(0, 217, 255, 0.3);
+    border-radius: 15px;
+    padding: 20px 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-height: 80px;
+}
+
+.direction-btn:hover {
+    background: linear-gradient(145deg, #3a3a5a, #2a2a4a);
+    border-color: rgba(0, 217, 255, 0.6);
+    transform: scale(1.05);
+}
+
+.direction-btn:active {
+    transform: scale(0.95);
+}
+
+.direction-btn:focus {
+    outline: none;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+}
+
+/* Button arrows */
+.arrow {
+    font-size: 1.8rem;
+    color: #00d9ff;
+}
+
+/* Button labels */
+.btn-label {
+    font-size: 0.85rem;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Stop button special style */
+.direction-btn.stop {
+    background: linear-gradient(145deg, #4a2a2a, #3a1a1a);
+    border-color: rgba(255, 68, 68, 0.5);
+}
+
+.direction-btn.stop:hover {
+    background: linear-gradient(145deg, #5a3a3a, #4a2a2a);
+    border-color: rgba(255, 68, 68, 0.8);
+}
+
+.direction-btn.stop .btn-label {
+    color: #ff4444;
+    font-size: 1rem;
+}
+
+/* Keyboard hints */
+.keyboard-hints {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.keyboard-hints p {
+    color: #aaaaaa;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.key-hint {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    border-radius: 8px;
+    margin: 5px;
+    font-size: 0.85rem;
+    color: #00d9ff;
+    border: 1px solid rgba(0, 217, 255, 0.3);
+}
+
+/* Footer */
+.footer {
+    margin-top: auto;
+    padding: 20px;
+    text-align: center;
+    color: #666666;
+    font-size: 0.85rem;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .status-panel {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .direction-pad {
+        gap: 10px;
+        max-width: 250px;
+    }
+    
+    .direction-btn {
+        padding: 15px 10px;
+        min-height: 70px;
+    }
+    
+    .arrow {
+        font-size: 1.5rem;
+    }
+}
