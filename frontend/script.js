@@ -26,6 +26,10 @@ const btnLeft = document.getElementById('btn-left');
 const btnRight = document.getElementById('btn-right');
 const btnStop = document.getElementById('btn-stop');
 
+// Terrain button elements
+const terrainButtons = document.querySelectorAll('.terrain-btn');
+const currentTerrainElement = document.getElementById('current-terrain');
+
 /**
  * Send command to backend API
  * @param {string} command - The command to send (forward, backward, left, right, stop)
@@ -76,6 +80,52 @@ function updateConnectionStatus(isConnected) {
     } else {
         connectionStatusElement.textContent = 'Disconnected';
         connectionStatusElement.classList.add('disconnected');
+    }
+}
+
+/**
+ * Set terrain mode
+ * @param {string} terrain - Terrain name (grass, gravel, cobblestone, slope, stairs)
+ */
+async function setTerrain(terrain) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/terrain`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ terrain: terrain }),
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            console.log(`[Frontend] Terrain changed to: ${terrain}`);
+
+            // Update all terrain buttons to remove active class
+            terrainButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Add active class to selected terrain button
+            const selectedButton = document.getElementById(`terrain-${terrain}`);
+            if (selectedButton) {
+                selectedButton.classList.add('active');
+            }
+
+            // Update current terrain display
+            if (currentTerrainElement && data.profile) {
+                currentTerrainElement.textContent = data.profile.name;
+            }
+
+            updateConnectionStatus(true);
+        } else {
+            console.error('[Frontend] Failed to change terrain:', data.message);
+            updateConnectionStatus(false);
+        }
+    } catch (error) {
+        console.error('[Frontend] Error changing terrain:', error);
+        updateConnectionStatus(false);
     }
 }
 
@@ -166,6 +216,15 @@ function init() {
             console.log('Speed changed to:', currentSpeed);
         });
     }
+
+    // Setup terrain button listeners
+    terrainButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const terrain = this.getAttribute('data-terrain');
+            console.log('Terrain button clicked:', terrain);
+            setTerrain(terrain);
+        });
+    });
 
     // Check backend connection on startup
     checkBackendConnection();

@@ -53,10 +53,10 @@ if REAL_ROBOT:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         sdk_path = os.path.join(current_dir, '../sdk/unitree_legged_sdk/lib/python/amd64')
         sdk_path = os.path.abspath(sdk_path)
-        
+
         print(f"[GO1 Controller] 📂 Adding SDK path: {sdk_path}")
         sys.path.append(sdk_path)
-        
+
         # Check if SDK file exists
         if os.path.exists(sdk_path):
             print(f"[GO1 Controller] ✅ SDK directory exists")
@@ -64,11 +64,11 @@ if REAL_ROBOT:
             print(f"[GO1 Controller] 📁 SDK files: {files}")
         else:
             print(f"[GO1 Controller] ❌ SDK directory not found: {sdk_path}")
-        
+
         # Import the SDK
         import robot_interface as sdk
         print("[GO1 Controller] ✅ Successfully imported Unitree SDK")
-        
+
     except ImportError as e:
         print(f"[GO1 Controller] ❌ ERROR: Could not import Unitree SDK: {e}")
         print(f"[GO1 Controller] ❌ Python version: {sys.version}")
@@ -79,6 +79,14 @@ if REAL_ROBOT:
         print(f"[GO1 Controller] ❌ Detailed error: {type(e).__name__}")
         print("[GO1 Controller] Falling back to SAFE MODE")
         REAL_ROBOT = False
+
+# Import terrain profile system
+try:
+    from terrain_profiles import TerrainManager
+    print("[GO1 Controller] ✅ Successfully imported TerrainManager")
+except ImportError:
+    print("[GO1 Controller] ⚠️ Could not import TerrainManager, terrain profiles disabled")
+    TerrainManager = None
 
 
 class GO1Controller:
@@ -96,23 +104,29 @@ class GO1Controller:
         self.current_command = "stop"
         self.current_speed = 0.0
         self.current_yaw_speed = 0.0
-        
+
         # UDP communication objects
         self.udp = None
         self.cmd = None
         self.state = None
-        
+
         # Control loop flag
         self.running = False
         self.control_thread = None
-        
+
+        # Initialize terrain manager
+        if TerrainManager:
+            self.terrain_manager = TerrainManager(default_terrain="grass")
+        else:
+            self.terrain_manager = None
+
         # Initialize connection if REAL_ROBOT is enabled
         if REAL_ROBOT:
             self._init_udp_connection()
         else:
             print("[GO1 Controller] 🟡 Initializing in SAFE MODE (no real robot connection)")
             print("[GO1 Controller] Set REAL_ROBOT = True to connect to actual robot")
-        
+
         print("[GO1 Controller] Ready to receive commands...")
     
     def _init_udp_connection(self):
@@ -241,76 +255,76 @@ class GO1Controller:
     def forward(self, speed: float = 0.5):
         """
         Move the robot forward.
-        
+
         Args:
             speed: Movement speed (0.0 to 1.0, where 1.0 = MAX_FORWARD_SPEED)
         """
-        # Calculate actual speed (limit to safe maximum)
-        actual_speed = min(speed * MAX_FORWARD_SPEED, MAX_FORWARD_SPEED)
-        
+        terrain_multiplier = self.terrain_manager.get_speed_multiplier() if self.terrain_manager else 1.0
+        actual_speed = min(speed * MAX_FORWARD_SPEED * terrain_multiplier, MAX_FORWARD_SPEED)
+
         self.current_command = "forward"
         self.current_speed = actual_speed
         self.current_yaw_speed = 0.0
-        
-        print(f"[GO1 Controller] ➡️ Command: FORWARD | Speed: {actual_speed:.2f} m/s")
-        
+
+        print(f"[GO1 Controller] ➡️ Command: FORWARD | Speed: {actual_speed:.2f} m/s | Terrain: {self.terrain_manager.current_terrain if self.terrain_manager else 'N/A'} (x{terrain_multiplier:.2f})")
+
         if REAL_ROBOT:
             self._set_walk_command(vx=actual_speed)
     
     def backward(self, speed: float = 0.5):
         """
         Move the robot backward.
-        
+
         Args:
             speed: Movement speed (0.0 to 1.0, where 1.0 = MAX_BACKWARD_SPEED)
         """
-        # Calculate actual speed (limit to safe maximum)
-        actual_speed = min(speed * MAX_BACKWARD_SPEED, MAX_BACKWARD_SPEED)
-        
+        terrain_multiplier = self.terrain_manager.get_speed_multiplier() if self.terrain_manager else 1.0
+        actual_speed = min(speed * MAX_BACKWARD_SPEED * terrain_multiplier, MAX_BACKWARD_SPEED)
+
         self.current_command = "backward"
         self.current_speed = -actual_speed
         self.current_yaw_speed = 0.0
-        
-        print(f"[GO1 Controller] ⬅️ Command: BACKWARD | Speed: {actual_speed:.2f} m/s")
-        
+
+        print(f"[GO1 Controller] ⬅️ Command: BACKWARD | Speed: {actual_speed:.2f} m/s | Terrain: {self.terrain_manager.current_terrain if self.terrain_manager else 'N/A'} (x{terrain_multiplier:.2f})")
+
         if REAL_ROBOT:
             self._set_walk_command(vx=-actual_speed)
     
     def turn_left(self, speed: float = 0.5):
         """
         Turn the robot to the left.
-        
+
         Args:
             speed: Turning speed (0.0 to 1.0, where 1.0 = MAX_TURN_SPEED)
         """
-        # Calculate actual turn speed (limit to safe maximum)
-        actual_speed = min(speed * MAX_TURN_SPEED, MAX_TURN_SPEED)
-        
+        terrain_multiplier = self.terrain_manager.get_yaw_rate_multiplier() if self.terrain_manager else 1.0
+        actual_speed = min(speed * MAX_TURN_SPEED * terrain_multiplier, MAX_TURN_SPEED)
+
         self.current_command = "left"
         self.current_speed = 0.0
         self.current_yaw_speed = actual_speed
-        
-        print(f"[GO1 Controller] 🔄 Command: TURN LEFT | Speed: {actual_speed:.2f} rad/s")
-        
+
+        print(f"[GO1 Controller] 🔄 Command: TURN LEFT | Speed: {actual_speed:.2f} rad/s | Terrain: {self.terrain_manager.current_terrain if self.terrain_manager else 'N/A'} (x{terrain_multiplier:.2f})")
+
         if REAL_ROBOT:
             self._set_walk_command(vx=0.0, yaw_speed=actual_speed)
     
     def turn_right(self, speed: float = 0.5):
         """
         Turn the robot to the right.
-        
+
         Args:
             speed: Turning speed (0.0 to 1.0, where 1.0 = MAX_TURN_SPEED)
         """
-        # Calculate actual turn speed (limit to safe maximum)
-        actual_speed = min(speed * MAX_TURN_SPEED, MAX_TURN_SPEED)
-        
+        terrain_multiplier = self.terrain_manager.get_yaw_rate_multiplier() if self.terrain_manager else 1.0
+        actual_speed = min(speed * MAX_TURN_SPEED * terrain_multiplier, MAX_TURN_SPEED)
+
         self.current_command = "right"
         self.current_speed = 0.0
         self.current_yaw_speed = -actual_speed
-        
-        print(f"[GO1 Controller] 🔄 Command: TURN RIGHT | Speed: {actual_speed:.2f} rad/s")
-        
+
+        print(f"[GO1 Controller] 🔄 Command: TURN RIGHT | Speed: {actual_speed:.2f} rad/s | Terrain: {self.terrain_manager.current_terrain if self.terrain_manager else 'N/A'} (x{terrain_multiplier:.2f})")
+
         if REAL_ROBOT:
             self._set_walk_command(vx=0.0, yaw_speed=-actual_speed)
     
@@ -321,16 +335,32 @@ class GO1Controller:
         self.current_command = "stop"
         self.current_speed = 0.0
         self.current_yaw_speed = 0.0
-        
+
         print("[GO1 Controller] ⏹️ Command: STOP")
-        
+
         if REAL_ROBOT:
             self._set_idle_command()
-    
+
+    def set_terrain(self, terrain_name: str) -> bool:
+        """
+        Set the terrain mode.
+
+        Args:
+            terrain_name: Name of terrain (grass, gravel, cobblestone, slope, stairs)
+
+        Returns:
+            True if terrain was set successfully, False otherwise
+        """
+        if self.terrain_manager:
+            return self.terrain_manager.set_terrain(terrain_name)
+        else:
+            print("[GO1 Controller] ⚠️ Terrain manager not available")
+            return False
+
     def get_status(self):
         """
         Get current status of the controller.
-        
+
         Returns:
             dict: Current command, speed, and connection status
         """
@@ -341,7 +371,12 @@ class GO1Controller:
             "connection_status": "connected" if REAL_ROBOT else "safe_mode",
             "real_robot_enabled": REAL_ROBOT
         }
-        
+
+        # Add terrain info if available
+        if self.terrain_manager:
+            status["terrain_mode"] = self.terrain_manager.current_terrain
+            status["terrain_profile"] = self.terrain_manager.current_profile.to_dict()
+
         # Add robot state if connected
         if REAL_ROBOT and self.state is not None:
             status.update({
@@ -349,7 +384,7 @@ class GO1Controller:
                 "robot_gait_type": self.state.gaitType,
                 "battery_soc": self.state.bms.SOC if hasattr(self.state, 'bms') else "N/A"
             })
-        
+
         return status
     
     def __del__(self):

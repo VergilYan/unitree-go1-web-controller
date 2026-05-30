@@ -129,6 +129,43 @@ def status():
     status = go1.get_status()
     return jsonify(status)
 
+@app.route('/terrain', methods=['POST'])
+def terrain():
+    """
+    API Endpoint: Set terrain mode
+    Method: POST
+    Body: {"terrain": "grass"} (options: grass, gravel, cobblestone, slope, stairs)
+    Example: curl -X POST http://localhost:5000/terrain -H "Content-Type: application/json" -d '{"terrain": "gravel"}'
+    """
+    if not request.is_json:
+        return jsonify({
+            "status": "error",
+            "message": "Request must be JSON"
+        }), 400
+
+    data = request.get_json()
+    if not data or 'terrain' not in data:
+        return jsonify({
+            "status": "error",
+            "message": "Missing 'terrain' field in request body"
+        }), 400
+
+    terrain_name = data['terrain']
+    success = go1.set_terrain(terrain_name)
+
+    if success:
+        return jsonify({
+            "status": "success",
+            "terrain": terrain_name,
+            "profile": go1.terrain_manager.current_profile.to_dict() if go1.terrain_manager else None
+        })
+    else:
+        return jsonify({
+            "status": "error",
+            "message": f"Unknown terrain: {terrain_name}",
+            "available_terrains": ["grass", "gravel", "cobblestone", "slope", "stairs"]
+        }), 400
+
 # ------------------- Run Server -------------------
 
 if __name__ == '__main__':
@@ -138,8 +175,10 @@ if __name__ == '__main__':
     """
     print("Starting GO1 Web Controller backend...")
     print("Server running at: http://localhost:5000")
-    print("API endpoints: /forward, /backward, /left, /right, /stop, /status")
-    
+    print("API endpoints:")
+    print("  Movement: /forward, /backward, /left, /right, /stop, /status")
+    print("  Terrain: /terrain (POST)")
+
     # Run Flask in production mode (NOT debug mode)
     # debug=False prevents auto-reload which causes port conflicts with GO1 SDK
     # use_reloader=False prevents Flask from restarting and causing port conflicts

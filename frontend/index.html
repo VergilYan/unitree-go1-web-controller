@@ -40,6 +40,22 @@
                 <input type="range" id="speed-slider" min="0.1" max="1.0" step="0.1" value="0.5">
                 <span id="speed-value">0.5</span>
             </div>
+
+            <!-- Terrain mode selection -->
+            <div class="terrain-panel">
+                <h3>Terrain Mode</h3>
+                <div class="terrain-buttons">
+                    <button id="terrain-grass" class="terrain-btn active" data-terrain="grass">Grass</button>
+                    <button id="terrain-gravel" class="terrain-btn" data-terrain="gravel">Gravel</button>
+                    <button id="terrain-cobblestone" class="terrain-btn" data-terrain="cobblestone">Cobblestone</button>
+                    <button id="terrain-slope" class="terrain-btn" data-terrain="slope">Slope</button>
+                    <button id="terrain-stairs" class="terrain-btn" data-terrain="stairs">Stairs</button>
+                </div>
+                <div class="terrain-info">
+                    <span class="terrain-label">Current:</span>
+                    <span id="current-terrain" class="terrain-value">Grass</span>
+                </div>
+            </div>
             
             <!-- Direction buttons arranged like a D-pad -->
             <div class="direction-pad">
