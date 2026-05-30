@@ -30,6 +30,10 @@ const btnStop = document.getElementById('btn-stop');
 const terrainButtons = document.querySelectorAll('.terrain-btn');
 const currentTerrainElement = document.getElementById('current-terrain');
 
+// Foot raise slider elements
+const footRaiseSlider = document.getElementById('foot-raise-slider');
+const footRaiseValue = document.getElementById('foot-raise-value');
+
 /**
  * Send command to backend API
  * @param {string} command - The command to send (forward, backward, left, right, stop)
@@ -130,6 +134,35 @@ async function setTerrain(terrain) {
 }
 
 /**
+ * Set foot raise height
+ * @param {number} height - Foot raise height in meters (0.05 to 0.30)
+ */
+async function setFootRaiseHeight(height) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/foot_raise`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ height: height }),
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            console.log(`[Frontend] Foot raise height set to: ${height}m`);
+            updateConnectionStatus(true);
+        } else {
+            console.error('[Frontend] Failed to set foot raise height:', data.message);
+            updateConnectionStatus(false);
+        }
+    } catch (error) {
+        console.error('[Frontend] Error setting foot raise height:', error);
+        updateConnectionStatus(false);
+    }
+}
+
+/**
  * Check if backend is reachable
  */
 async function checkBackendConnection() {
@@ -225,6 +258,18 @@ function init() {
             setTerrain(terrain);
         });
     });
+
+    // Setup foot raise slider listener
+    if (footRaiseSlider) {
+        footRaiseSlider.addEventListener('input', function() {
+            const height = parseFloat(this.value);
+            if (footRaiseValue) {
+                footRaiseValue.textContent = height.toFixed(2) + 'm';
+            }
+            console.log('Foot raise height changed to:', height);
+            setFootRaiseHeight(height);
+        });
+    }
 
     // Check backend connection on startup
     checkBackendConnection();

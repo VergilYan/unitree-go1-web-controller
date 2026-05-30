@@ -166,6 +166,54 @@ def terrain():
             "available_terrains": ["grass", "gravel", "cobblestone", "slope", "stairs"]
         }), 400
 
+@app.route('/foot_raise', methods=['POST'])
+def foot_raise():
+    """
+    API Endpoint: Set foot raise height
+    Method: POST
+    Body: {"height": 0.15} (range: 0.05 to 0.30 meters)
+    Example: curl -X POST http://localhost:5000/foot_raise -H "Content-Type: application/json" -d '{"height": 0.20}'
+    """
+    if not request.is_json:
+        return jsonify({
+            "status": "error",
+            "message": "Request must be JSON"
+        }), 400
+
+    data = request.get_json()
+    if not data or 'height' not in data:
+        return jsonify({
+            "status": "error",
+            "message": "Missing 'height' field in request body"
+        }), 400
+
+    try:
+        height = float(data['height'])
+        # Validate range
+        if height < 0.05:
+            height = 0.05
+        elif height > 0.30:
+            height = 0.30
+
+        success = go1.set_foot_raise_height(height)
+
+        if success:
+            return jsonify({
+                "status": "success",
+                "foot_raise_height": height,
+                "message": f"Foot raise height set to {height:.2f}m"
+            })
+        else:
+            return jsonify({
+                "status": "error",
+                "message": "Failed to set foot raise height"
+            }), 500
+    except ValueError:
+        return jsonify({
+            "status": "error",
+            "message": "Invalid height value. Must be a number."
+        }), 400
+
 # ------------------- Run Server -------------------
 
 if __name__ == '__main__':

@@ -120,6 +120,9 @@ class GO1Controller:
         else:
             self.terrain_manager = None
 
+        # Custom foot raise height override (0 = use terrain default)
+        self.custom_foot_raise_height = 0
+
         # Initialize connection if REAL_ROBOT is enabled
         if REAL_ROBOT:
             self._init_udp_connection()
@@ -231,9 +234,15 @@ class GO1Controller:
         """
         if REAL_ROBOT and self.cmd is not None:
             # Get terrain-specific foot raise height
-            foot_raise = 0.08  # default 8cm
-            if self.terrain_manager:
+            if self.custom_foot_raise_height > 0:
+                foot_raise = self.custom_foot_raise_height
+                terrain_name = "custom"
+            elif self.terrain_manager:
                 foot_raise = self.terrain_manager.get_foot_raise_height()
+                terrain_name = self.terrain_manager.current_terrain
+            else:
+                foot_raise = 0.08
+                terrain_name = "default"
 
             # Set walking mode (same as example)
             self.cmd.mode = 2              # Mode 2 = continuous walking
@@ -390,6 +399,25 @@ class GO1Controller:
         else:
             print("[GO1 Controller] ⚠️ Terrain manager not available")
             return False
+
+    def set_foot_raise_height(self, height: float) -> bool:
+        """
+        Set custom foot raise height override.
+
+        Args:
+            height: Foot raise height in meters (0.05 to 0.30)
+
+        Returns:
+            True if successful
+        """
+        if height < 0.05:
+            height = 0.05
+        elif height > 0.30:
+            height = 0.30
+
+        self.custom_foot_raise_height = height
+        print(f"[GO1 Controller] 🦶 Custom foot raise height set to: {height:.2f}m")
+        return True
 
     def get_status(self):
         """

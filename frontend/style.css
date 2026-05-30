@@ -294,6 +294,7 @@ body {
     justify-content: center;
     align-items: center;
     gap: 10px;
+    margin-bottom: 10px;
 }
 
 .terrain-label {
@@ -305,6 +306,62 @@ body {
     color: #00ff88;
     font-weight: bold;
     font-size: 1.1rem;
+}
+
+/* Foot raise height slider */
+.foot-raise-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.foot-raise-control label {
+    color: #00d9ff;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.foot-raise-control input[type="range"] {
+    flex: 1;
+    max-width: 150px;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.foot-raise-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #00d9ff;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0, 217, 255, 0.5);
+}
+
+.foot-raise-control input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #00d9ff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 8px rgba(0, 217, 255, 0.5);
+}
+
+.foot-raise-control span {
+    min-width: 50px;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #00ff88;
 }
 
 /* Keyboard hints */
