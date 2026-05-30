@@ -14,20 +14,23 @@ class TerrainProfile:
     """
     Represents a terrain profile with speed and yaw_rate settings.
     """
-    def __init__(self, name: str, speed_multiplier: float, yaw_rate_multiplier: float, description: str = ""):
+    def __init__(self, name: str, speed_multiplier: float, yaw_rate_multiplier: float, 
+                 foot_raise_height: float = 0.08, description: str = ""):
         self.name = name
         self.speed_multiplier = speed_multiplier
         self.yaw_rate_multiplier = yaw_rate_multiplier
+        self.foot_raise_height = foot_raise_height  # in meters
         self.description = description
 
     def __repr__(self):
-        return f"TerrainProfile({self.name}, speed={self.speed_multiplier}, yaw_rate={self.yaw_rate_multiplier})"
+        return f"TerrainProfile({self.name}, speed={self.speed_multiplier}, yaw_rate={self.yaw_rate_multiplier}, foot_raise={self.foot_raise_height})"
 
     def to_dict(self):
         return {
             "name": self.name,
             "speed_multiplier": self.speed_multiplier,
             "yaw_rate_multiplier": self.yaw_rate_multiplier,
+            "foot_raise_height": self.foot_raise_height,
             "description": self.description
         }
 
@@ -37,31 +40,36 @@ TERRAIN_PROFILES = {
         name="Grass",
         speed_multiplier=0.4,
         yaw_rate_multiplier=0.25,
+        foot_raise_height=0.08,
         description="Normal grass terrain, balanced speed and control"
     ),
     "gravel": TerrainProfile(
         name="Gravel",
         speed_multiplier=0.25,
         yaw_rate_multiplier=0.15,
+        foot_raise_height=0.10,
         description="Loose gravel, reduced speed for stability"
     ),
     "cobblestone": TerrainProfile(
         name="Cobblestone",
         speed_multiplier=0.20,
         yaw_rate_multiplier=0.10,
+        foot_raise_height=0.12,
         description="Uneven cobblestones, slow and careful"
     ),
     "slope": TerrainProfile(
         name="Slope",
         speed_multiplier=0.15,
         yaw_rate_multiplier=0.08,
+        foot_raise_height=0.15,
         description="Incline/decline, very slow for safety"
     ),
     "stairs": TerrainProfile(
         name="Stairs",
         speed_multiplier=0.10,
         yaw_rate_multiplier=0.05,
-        description="Stair climbing, minimum speed"
+        foot_raise_height=0.28,
+        description="Stair climbing, minimum speed, high foot raise for 23cm stairs"
     ),
 }
 
@@ -129,6 +137,15 @@ class TerrainManager:
             Yaw rate multiplier (0.0 to 1.0)
         """
         return self.current_profile.yaw_rate_multiplier
+
+    def get_foot_raise_height(self) -> float:
+        """
+        Get foot raise height for current terrain.
+
+        Returns:
+            Foot raise height in meters
+        """
+        return self.current_profile.foot_raise_height
 
     def get_status(self) -> dict:
         """

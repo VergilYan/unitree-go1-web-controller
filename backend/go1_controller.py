@@ -223,25 +223,31 @@ class GO1Controller:
     def _set_walk_command(self, vx: float, vy: float = 0.0, yaw_speed: float = 0.0):
         """
         Set walking command parameters.
-        
+
         Args:
             vx: Forward/backward speed (-0.3 to 0.5 m/s)
             vy: Sideways speed (-0.5 to 0.5 m/s)
             yaw_speed: Rotation speed (-1.0 to 1.0 rad/s)
         """
         if REAL_ROBOT and self.cmd is not None:
+            # Get terrain-specific foot raise height
+            foot_raise = 0.08  # default 8cm
+            if self.terrain_manager:
+                foot_raise = self.terrain_manager.get_foot_raise_height()
+
             # Set walking mode (same as example)
             self.cmd.mode = 2              # Mode 2 = continuous walking
             self.cmd.gaitType = 1          # Gait type 1 = trot
             self.cmd.speedLevel = 0        # Speed level
-            self.cmd.footRaiseHeight = 0.08  # Foot raise height (8cm)
+            self.cmd.footRaiseHeight = foot_raise  # Foot raise height from terrain profile
             self.cmd.bodyHeight = 0.0      # No body height adjustment
             self.cmd.euler = [0, 0, 0]     # Keep body level
             self.cmd.velocity = [vx, vy]   # [forward_speed, side_speed]
             self.cmd.yawSpeed = yaw_speed  # Rotation speed
             self.cmd.reserve = 0           # Reserved field
-            
-            print(f"[GO1 Controller] 📤 Setting walk command: vx={vx}, vy={vy}, yaw={yaw_speed}")
+
+            terrain_name = self.terrain_manager.current_terrain if self.terrain_manager else "default"
+            print(f"[GO1 Controller] 📤 Setting walk command: vx={vx}, vy={vy}, yaw={yaw_speed}, foot_raise={foot_raise:.2f}m [{terrain_name}]")
         
     def _set_idle_command(self):
         """
@@ -260,7 +266,14 @@ class GO1Controller:
             speed: Movement speed (0.0 to 1.0, where 1.0 = MAX_FORWARD_SPEED)
         """
         terrain_multiplier = self.terrain_manager.get_speed_multiplier() if self.terrain_manager else 1.0
-        actual_speed = min(speed * MAX_FORWARD_SPEED * terrain_multiplier, MAX_FORWARD_SPEED)
+        actual_speed = speed * MAX_FORWARD_SPEED * terrain_multiplier
+        
+        # Ensure minimum speed threshold for robot to respond
+        MIN_FORWARD_SPEED = 0.05
+        actual_speed = max(actual_speed, MIN_FORWARD_SPEED)
+        
+        # Limit to maximum
+        actual_speed = min(actual_speed, MAX_FORWARD_SPEED)
 
         self.current_command = "forward"
         self.current_speed = actual_speed
@@ -279,7 +292,14 @@ class GO1Controller:
             speed: Movement speed (0.0 to 1.0, where 1.0 = MAX_BACKWARD_SPEED)
         """
         terrain_multiplier = self.terrain_manager.get_speed_multiplier() if self.terrain_manager else 1.0
-        actual_speed = min(speed * MAX_BACKWARD_SPEED * terrain_multiplier, MAX_BACKWARD_SPEED)
+        actual_speed = speed * MAX_BACKWARD_SPEED * terrain_multiplier
+        
+        # Ensure minimum speed threshold for robot to respond
+        MIN_BACKWARD_SPEED = 0.03
+        actual_speed = max(actual_speed, MIN_BACKWARD_SPEED)
+        
+        # Limit to maximum
+        actual_speed = min(actual_speed, MAX_BACKWARD_SPEED)
 
         self.current_command = "backward"
         self.current_speed = -actual_speed
@@ -298,7 +318,14 @@ class GO1Controller:
             speed: Turning speed (0.0 to 1.0, where 1.0 = MAX_TURN_SPEED)
         """
         terrain_multiplier = self.terrain_manager.get_yaw_rate_multiplier() if self.terrain_manager else 1.0
-        actual_speed = min(speed * MAX_TURN_SPEED * terrain_multiplier, MAX_TURN_SPEED)
+        actual_speed = speed * MAX_TURN_SPEED * terrain_multiplier
+        
+        # Ensure minimum yaw rate threshold for robot to respond
+        MIN_YAW_SPEED = 0.08
+        actual_speed = max(actual_speed, MIN_YAW_SPEED)
+        
+        # Limit to maximum
+        actual_speed = min(actual_speed, MAX_TURN_SPEED)
 
         self.current_command = "left"
         self.current_speed = 0.0
@@ -317,7 +344,14 @@ class GO1Controller:
             speed: Turning speed (0.0 to 1.0, where 1.0 = MAX_TURN_SPEED)
         """
         terrain_multiplier = self.terrain_manager.get_yaw_rate_multiplier() if self.terrain_manager else 1.0
-        actual_speed = min(speed * MAX_TURN_SPEED * terrain_multiplier, MAX_TURN_SPEED)
+        actual_speed = speed * MAX_TURN_SPEED * terrain_multiplier
+        
+        # Ensure minimum yaw rate threshold for robot to respond
+        MIN_YAW_SPEED = 0.08
+        actual_speed = max(actual_speed, MIN_YAW_SPEED)
+        
+        # Limit to maximum
+        actual_speed = min(actual_speed, MAX_TURN_SPEED)
 
         self.current_command = "right"
         self.current_speed = 0.0
