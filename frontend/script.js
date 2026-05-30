@@ -13,6 +13,11 @@ const API_BASE_URL = 'http://localhost:5000';
 // DOM elements we'll interact with
 const connectionStatusElement = document.getElementById('connection-status');
 const currentCommandElement = document.getElementById('current-command');
+const speedSliderElement = document.getElementById('speed-slider');
+const speedValueElement = document.getElementById('speed-value');
+
+// Current speed value
+let currentSpeed = 0.5;
 
 // Button elements
 const btnForward = document.getElementById('btn-forward');
@@ -24,23 +29,25 @@ const btnStop = document.getElementById('btn-stop');
 /**
  * Send command to backend API
  * @param {string} command - The command to send (forward, backward, left, right, stop)
+ * @param {number} speed - The speed parameter (0.1 to 1.0)
  */
-async function sendCommand(command) {
+async function sendCommand(command, speed = 0.5) {
     try {
         // Show loading state
         currentCommandElement.textContent = `Sending ${command}...`;
-        
+
         // Send POST request to backend using fetch()
         const response = await fetch(`${API_BASE_URL}/${command}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify({ speed: speed }),
         });
-        
+
         // Parse JSON response from backend
         const data = await response.json();
-        
+
         // Update UI with response
         if (data.status === 'success') {
             currentCommandElement.textContent = data.command.toUpperCase();
@@ -49,7 +56,7 @@ async function sendCommand(command) {
             currentCommandElement.textContent = 'Error';
             updateConnectionStatus(false);
         }
-        
+
     } catch (error) {
         // Handle errors (e.g., backend not running)
         console.error('Error sending command:', error);
@@ -94,11 +101,11 @@ async function checkBackendConnection() {
  * Handle button click events
  */
 function setupButtonListeners() {
-    btnForward.addEventListener('click', () => sendCommand('forward'));
-    btnBackward.addEventListener('click', () => sendCommand('backward'));
-    btnLeft.addEventListener('click', () => sendCommand('left'));
-    btnRight.addEventListener('click', () => sendCommand('right'));
-    btnStop.addEventListener('click', () => sendCommand('stop'));
+    btnForward.addEventListener('click', () => sendCommand('forward', currentSpeed));
+    btnBackward.addEventListener('click', () => sendCommand('backward', currentSpeed));
+    btnLeft.addEventListener('click', () => sendCommand('left', currentSpeed));
+    btnRight.addEventListener('click', () => sendCommand('right', currentSpeed));
+    btnStop.addEventListener('click', () => sendCommand('stop', currentSpeed));
 }
 
 /**
@@ -117,19 +124,19 @@ function handleKeyPress(event) {
     // Map keys to commands
     switch (key) {
         case 'w':
-            sendCommand('forward');
+            sendCommand('forward', currentSpeed);
             break;
         case 's':
-            sendCommand('backward');
+            sendCommand('backward', currentSpeed);
             break;
         case 'a':
-            sendCommand('left');
+            sendCommand('left', currentSpeed);
             break;
         case 'd':
-            sendCommand('right');
+            sendCommand('right', currentSpeed);
             break;
         case ' ':
-            sendCommand('stop');
+            sendCommand('stop', currentSpeed);
             break;
         default:
             // Ignore other keys
@@ -142,19 +149,30 @@ function handleKeyPress(event) {
  */
 function init() {
     console.log('Initializing GO1 Web Controller...');
-    
+
     // Setup button click listeners
     setupButtonListeners();
-    
+
     // Setup keyboard listener
     document.addEventListener('keydown', handleKeyPress);
-    
+
+    // Setup speed slider listener
+    if (speedSliderElement) {
+        speedSliderElement.addEventListener('input', function() {
+            currentSpeed = parseFloat(this.value);
+            if (speedValueElement) {
+                speedValueElement.textContent = currentSpeed.toFixed(1);
+            }
+            console.log('Speed changed to:', currentSpeed);
+        });
+    }
+
     // Check backend connection on startup
     checkBackendConnection();
-    
+
     // Check connection periodically (every 5 seconds)
     setInterval(checkBackendConnection, 5000);
-    
+
     console.log('GO1 Web Controller ready!');
 }
 

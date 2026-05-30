@@ -176,6 +176,64 @@ body {
     font-size: 1rem;
 }
 
+/* Speed control slider */
+.speed-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 15px;
+    background: rgba(0, 217, 255, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 217, 255, 0.3);
+}
+
+.speed-control label {
+    font-size: 1rem;
+    color: #00d9ff;
+    font-weight: 600;
+}
+
+.speed-control input[type="range"] {
+    flex: 1;
+    max-width: 200px;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.speed-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #00d9ff;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+.speed-control input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #00d9ff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+.speed-control span {
+    min-width: 40px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #00ff88;
+}
+
 /* Keyboard hints */
 .keyboard-hints {
     text-align: center;

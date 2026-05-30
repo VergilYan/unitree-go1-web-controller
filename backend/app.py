@@ -5,7 +5,7 @@ It provides REST API endpoints for controlling the GO1 robot.
 """
 
 # Import required modules
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS  # Handle cross-origin requests from frontend
 
 # Import our GO1 controller
@@ -27,12 +27,20 @@ def forward():
     """
     API Endpoint: Move robot forward
     Method: POST
-    Example: curl -X POST http://localhost:5000/forward
+    Body: {"speed": 0.5} (optional, range 0.1 to 1.0)
+    Example: curl -X POST http://localhost:5000/forward -H "Content-Type: application/json" -d '{"speed": 0.8}'
     """
-    go1.forward()
+    speed = 0.5
+    if request.is_json:
+        data = request.get_json()
+        if data and 'speed' in data:
+            speed = max(0.1, min(1.0, float(data['speed'])))
+
+    go1.forward(speed)
     return jsonify({
         "status": "success",
-        "command": "forward"
+        "command": "forward",
+        "speed": speed
     })
 
 @app.route('/backward', methods=['POST'])
@@ -40,12 +48,20 @@ def backward():
     """
     API Endpoint: Move robot backward
     Method: POST
-    Example: curl -X POST http://localhost:5000/backward
+    Body: {"speed": 0.5} (optional, range 0.1 to 1.0)
+    Example: curl -X POST http://localhost:5000/backward -H "Content-Type: application/json" -d '{"speed": 0.8}'
     """
-    go1.backward()
+    speed = 0.5
+    if request.is_json:
+        data = request.get_json()
+        if data and 'speed' in data:
+            speed = max(0.1, min(1.0, float(data['speed'])))
+
+    go1.backward(speed)
     return jsonify({
         "status": "success",
-        "command": "backward"
+        "command": "backward",
+        "speed": speed
     })
 
 @app.route('/left', methods=['POST'])
@@ -53,12 +69,20 @@ def left():
     """
     API Endpoint: Turn robot left
     Method: POST
-    Example: curl -X POST http://localhost:5000/left
+    Body: {"speed": 0.5} (optional, range 0.1 to 1.0)
+    Example: curl -X POST http://localhost:5000/left -H "Content-Type: application/json" -d '{"speed": 0.8}'
     """
-    go1.turn_left()
+    speed = 0.5
+    if request.is_json:
+        data = request.get_json()
+        if data and 'speed' in data:
+            speed = max(0.1, min(1.0, float(data['speed'])))
+
+    go1.turn_left(speed)
     return jsonify({
         "status": "success",
-        "command": "left"
+        "command": "left",
+        "speed": speed
     })
 
 @app.route('/right', methods=['POST'])
@@ -66,12 +90,20 @@ def right():
     """
     API Endpoint: Turn robot right
     Method: POST
-    Example: curl -X POST http://localhost:5000/right
+    Body: {"speed": 0.5} (optional, range 0.1 to 1.0)
+    Example: curl -X POST http://localhost:5000/right -H "Content-Type: application/json" -d '{"speed": 0.8}'
     """
-    go1.turn_right()
+    speed = 0.5
+    if request.is_json:
+        data = request.get_json()
+        if data and 'speed' in data:
+            speed = max(0.1, min(1.0, float(data['speed'])))
+
+    go1.turn_right(speed)
     return jsonify({
         "status": "success",
-        "command": "right"
+        "command": "right",
+        "speed": speed
     })
 
 @app.route('/stop', methods=['POST'])
